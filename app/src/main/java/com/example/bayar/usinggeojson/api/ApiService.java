@@ -1,5 +1,12 @@
 package com.example.bayar.usinggeojson.api;
 
+import com.example.bayar.usinggeojson.api.model.FirmsCluster;
+
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
+
 /**
  * Created by qqq on 18.01.2017.
  */
@@ -8,5 +15,7 @@ package com.example.bayar.usinggeojson.api;
 
 public interface ApiService {
 
+    @GET("{layer_id}/search?query=\"ClusterDate\">='2017-01-17'and\"ClusterDate\"<'2017-01-18'")
+    Call<FirmsCluster> getFirmsCluster(@Path("layer_id") String layerId, @Query("api_key") String apiKey);
 
 }
