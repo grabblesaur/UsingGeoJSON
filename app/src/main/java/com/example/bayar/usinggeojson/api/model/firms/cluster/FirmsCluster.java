@@ -1,36 +1,37 @@
 
-package com.example.bayar.usinggeojson.api.model;
+package com.example.bayar.usinggeojson.api.model.firms.cluster;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Geometry {
+public class FirmsCluster implements Serializable {
 
     @SerializedName("type")
     @Expose
     private String type;
-    @SerializedName("coordinates")
+    @SerializedName("features")
     @Expose
-    private List<Double> coordinates = null;
+    private List<Feature> features = null;
 
     /**
      * No args constructor for use in serialization
      * 
      */
-    public Geometry() {
+    public FirmsCluster() {
     }
 
     /**
      * 
+     * @param features
      * @param type
-     * @param coordinates
      */
-    public Geometry(String type, List<Double> coordinates) {
+    public FirmsCluster(String type, List<Feature> features) {
         super();
         this.type = type;
-        this.coordinates = coordinates;
+        this.features = features;
     }
 
     public String getType() {
@@ -41,12 +42,12 @@ public class Geometry {
         this.type = type;
     }
 
-    public List<Double> getCoordinates() {
-        return coordinates;
+    public List<Feature> getFeatures() {
+        return features;
     }
 
-    public void setCoordinates(List<Double> coordinates) {
-        this.coordinates = coordinates;
+    public void setFeatures(List<Feature> features) {
+        this.features = features;
     }
 
 }

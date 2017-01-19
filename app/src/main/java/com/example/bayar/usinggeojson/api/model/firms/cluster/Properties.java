@@ -1,10 +1,12 @@
 
-package com.example.bayar.usinggeojson.api.model;
+package com.example.bayar.usinggeojson.api.model.firms.cluster;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Properties {
+import java.io.Serializable;
+
+public class Properties implements Serializable {
 
     @SerializedName("ClusterId")
     @Expose

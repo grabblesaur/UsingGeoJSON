@@ -1,20 +1,21 @@
 package com.example.bayar.usinggeojson.view.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.example.bayar.usinggeojson.Application;
 import com.example.bayar.usinggeojson.R;
 import com.example.bayar.usinggeojson.api.ApiClient;
 import com.example.bayar.usinggeojson.api.ApiService;
-import com.example.bayar.usinggeojson.api.model.Feature;
-import com.example.bayar.usinggeojson.api.model.FirmsCluster;
+import com.example.bayar.usinggeojson.api.model.firms.cluster.Feature;
+import com.example.bayar.usinggeojson.api.model.firms.cluster.FirmsCluster;
 import com.example.bayar.usinggeojson.presenter.MainActivityPresenter;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Inject
     MainActivityPresenter presenter;
 
-    private List<Feature> featureList;
+    private Set<Feature> featureSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Application.getComponent(this).inject(this);
 
         // временная мера
-        featureList = new ArrayList<>();
+        featureSet = new HashSet<>();
 
         fetchCluster();
     }
@@ -57,10 +58,11 @@ public class MainActivity extends AppCompatActivity {
                 .enqueue(new Callback<FirmsCluster>() {
                     @Override
                     public void onResponse(Call<FirmsCluster> call, Response<FirmsCluster> response) {
-                        featureList.addAll(response.body().getFeatures());
+                        featureSet.addAll(response.body().getFeatures());
                         Toast.makeText(MainActivity.this,
-                                "Cluster layer was downloaded, current list size: " + featureList.size(),
+                                "Cluster layer was downloaded, current list size: " + featureSet.size(),
                                 Toast.LENGTH_SHORT).show();
+
                     }
 
                     @Override
@@ -72,6 +74,10 @@ public class MainActivity extends AppCompatActivity {
 
     @OnClick(R.id.am_btn_show_on_map)
     public void showOnMapClicked() {
-        startActivity(new Intent(MainActivity.this, MapsActivity.class));
+
+        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+        intent.putExtra(MapsActivity.FEATURE_LIST, (Serializable) featureSet);
+        startActivity(intent);
+
     }
 }

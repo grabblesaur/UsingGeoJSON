@@ -5,20 +5,23 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.example.bayar.usinggeojson.R;
+import com.example.bayar.usinggeojson.api.model.firms.cluster.Feature;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polygon;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    public static final String FEATURE_LIST = "feature_list";
     private GoogleMap mMap;
+    private Set<Feature> featureSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        featureSet = new HashSet<>();
+        if (getIntent().hasExtra(FEATURE_LIST)) {
+            featureSet = (Set<Feature>) getIntent().getSerializableExtra(FEATURE_LIST);
+        }
     }
 
 
@@ -49,32 +57,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 16));
 
-        addPolyline();
-        addPolygon();
-        addCircle();
-    }
+        CircleOptions co = new CircleOptions()
+                .center(sydney)
+                .radius(15)
+                .strokeColor(Color.RED);
 
-    private void addPolyline() {
-        PolylineOptions rectOptions = new PolylineOptions()
-                .add(new LatLng(-34, 151))
-                .add(new LatLng(-34, 151.1))
-                .add(new LatLng(-34.1, 151.2))
-                .add(new LatLng(-34.1, 151.3));
+        mMap.addCircle(co);
 
-        Polyline polyline = mMap.addPolyline(rectOptions);
-        polyline.setColor(Color.BLUE);
-    }
+        if (!featureSet.isEmpty()) {
+            for (Feature feature : featureSet) {
+                Double latitude = feature.getGeometry().getCoordinates().get(0);
+                Double longitude = feature.getGeometry().getCoordinates().get(1);
 
-    private void addPolygon() {
-        PolygonOptions options = new PolygonOptions()
-                .add(new LatLng(-34, 151), new LatLng(-34, 151.02), new LatLng(-34.02, 151.02));
-        Polygon polygon = mMap.addPolygon(options);
-        polygon.setStrokeColor(Color.RED);
-        polygon.setFillColor(Color.GREEN);
-    }
-
-    private void addCircle() {
+                CircleOptions options = new CircleOptions()
+                        .center(new LatLng(latitude, longitude))
+                        .radius(feature.getProperties().getMaxArea())
+                        .visible(true);
+                mMap.addCircle(options);
+            }
+        }
 
     }
-
 }

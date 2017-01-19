@@ -1,6 +1,6 @@
 package com.example.bayar.usinggeojson.api;
 
-import com.example.bayar.usinggeojson.api.model.FirmsCluster;
+import com.example.bayar.usinggeojson.api.model.firms.cluster.FirmsCluster;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
