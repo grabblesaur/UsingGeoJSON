@@ -16,7 +16,7 @@
 
     <Button
         android:id="@+id/am_btn_show_on_map"
-        android:text="show on map"
+        android:text="show firms clusters on map"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

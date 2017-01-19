@@ -4,19 +4,20 @@ package com.example.bayar.usinggeojson.api.model.firms.cluster;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+import org.parceler.Parcel;
 
-public class Feature implements Serializable {
+@Parcel
+public class Feature {
 
     @SerializedName("type")
     @Expose
-    private String type;
+    String type;
     @SerializedName("geometry")
     @Expose
-    private Geometry geometry;
+    Geometry geometry;
     @SerializedName("properties")
     @Expose
-    private Properties properties;
+    Properties properties;
 
     /**
      * No args constructor for use in serialization

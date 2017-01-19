@@ -1,21 +1,30 @@
 package com.example.bayar.usinggeojson.view.activity;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.example.bayar.usinggeojson.R;
+import com.example.bayar.usinggeojson.api.ApiClient;
+import com.example.bayar.usinggeojson.api.ApiService;
 import com.example.bayar.usinggeojson.api.model.firms.cluster.Feature;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.example.bayar.usinggeojson.api.model.firms.cluster.FirmsCluster;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.example.bayar.usinggeojson.view.activity.MainActivity.API_KEY;
+import static com.example.bayar.usinggeojson.view.activity.MainActivity.LAYER_FIRMS_CLUSTER;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -33,8 +42,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
 
         featureSet = new HashSet<>();
-        if (getIntent().hasExtra(FEATURE_LIST)) {
-            featureSet = (Set<Feature>) getIntent().getSerializableExtra(FEATURE_LIST);
+        fetchCluster();
+    }
+
+    private void fetchCluster() {
+        ApiService service = ApiClient.getClient().create(ApiService.class);
+
+        service.getFirmsCluster(LAYER_FIRMS_CLUSTER, API_KEY)
+                .enqueue(new Callback<FirmsCluster>() {
+                    @Override
+                    public void onResponse(Call<FirmsCluster> call, Response<FirmsCluster> response) {
+                        featureSet.addAll(response.body().getFeatures());
+                        Toast.makeText(MapsActivity.this,
+                                "Cluster layer was downloaded, current list size: " + featureSet.size(),
+                                Toast.LENGTH_SHORT).show();
+                        Log.i(MainActivity.TAG, "onResponse: success " + featureSet.size());
+                        startDraw();
+                    }
+
+                    @Override
+                    public void onFailure(Call<FirmsCluster> call, Throwable t) {
+                        Toast.makeText(MapsActivity.this, "Failed to download cluster", Toast.LENGTH_SHORT).show();
+                        Log.i(MainActivity.TAG, "onFailure: ");
+                    }
+                });
+    }
+
+    private void startDraw() {
+        if (!featureSet.isEmpty() && mMap != null) {
+            for (Feature feature : featureSet) {
+                Double latitude = feature.getGeometry().getCoordinates().get(0);
+                Double longitude = feature.getGeometry().getCoordinates().get(1);
+
+                CircleOptions options = new CircleOptions()
+                        .center(new LatLng(latitude, longitude))
+                        .radius(feature.getProperties().getMaxArea() * feature.getProperties().getHotSpotCount())
+                        .visible(true);
+                mMap.addCircle(options);
+            }
         }
     }
 
@@ -51,31 +96,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 16));
-
-        CircleOptions co = new CircleOptions()
-                .center(sydney)
-                .radius(15)
-                .strokeColor(Color.RED);
-
-        mMap.addCircle(co);
-
-        if (!featureSet.isEmpty()) {
-            for (Feature feature : featureSet) {
-                Double latitude = feature.getGeometry().getCoordinates().get(0);
-                Double longitude = feature.getGeometry().getCoordinates().get(1);
-
-                CircleOptions options = new CircleOptions()
-                        .center(new LatLng(latitude, longitude))
-                        .radius(feature.getProperties().getMaxArea())
-                        .visible(true);
-                mMap.addCircle(options);
-            }
-        }
-
+        mMap.getUiSettings().setZoomControlsEnabled(true);
     }
 }

@@ -4,37 +4,38 @@ package com.example.bayar.usinggeojson.api.model.firms.cluster;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+import org.parceler.Parcel;
 
-public class Properties implements Serializable {
+@Parcel
+public class Properties {
 
     @SerializedName("ClusterId")
     @Expose
-    private Integer clusterId;
+    Integer clusterId;
     @SerializedName("ParentClusterId")
     @Expose
-    private Integer parentClusterId;
+    Integer parentClusterId;
     @SerializedName("TotalPower")
     @Expose
-    private Double totalPower;
+    Double totalPower;
     @SerializedName("HotSpotCount")
     @Expose
-    private Integer hotSpotCount;
+    Integer hotSpotCount;
     @SerializedName("MaxArea")
     @Expose
-    private Double maxArea;
+    Double maxArea;
     @SerializedName("PixelArea")
     @Expose
-    private Double pixelArea;
+    Double pixelArea;
     @SerializedName("ClusterDate")
     @Expose
-    private String clusterDate;
+    String clusterDate;
     @SerializedName("IsIndustrial")
     @Expose
-    private Integer isIndustrial;
+    Integer isIndustrial;
     @SerializedName("FireType")
     @Expose
-    private Integer fireType;
+    Integer fireType;
 
     /**
      * No args constructor for use in serialization

@@ -4,17 +4,19 @@ package com.example.bayar.usinggeojson.api.model.firms.cluster;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+import org.parceler.Parcel;
+
 import java.util.List;
 
-public class Geometry implements Serializable {
+@Parcel
+public class Geometry {
 
     @SerializedName("type")
     @Expose
-    private String type;
+    String type;
     @SerializedName("coordinates")
     @Expose
-    private List<Double> coordinates = null;
+    List<Double> coordinates = null;
 
     /**
      * No args constructor for use in serialization
